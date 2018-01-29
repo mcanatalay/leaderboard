@@ -1,0 +1,20 @@
+{
+    "name": "leaderboard",
+    "version": "0.1.0",
+    "description": "An leaderboard attempt.",
+    "scripts": {
+        "install": "node install.js",
+        "start": "node server.js",
+        "npm-clear": "rimraf node_modules/*"
+    },
+    "devDependencies": {
+        "rimraf": "latest"
+    },
+    "dependencies": {
+        "mongodb": "^3.0.1",
+        "socket.io": "^2.0.4",
+        "express": "^4.16.2"
+    },
+    "author": "Mehmet Can Atalay",
+    "license": "MIT"
+}

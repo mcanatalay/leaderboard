@@ -1,0 +1,93 @@
+<script src="/dist/socket.io.js"></script>
+
+<div>
+    <form>
+        User Name<br>
+        <input type="text" value="USER007034" id="username">
+        <input type="button" value="Show" id="show" /><br>
+        <input type="button" value="Pass a Day" id="pass" />
+      </form>
+</div>
+<div>Treasure</div>
+<div id="treasure"></div>
+<div id="main"></div>
+
+<script>
+    var socket = io.connect('http://localhost');
+    var username = "";
+
+    socket.on('leaderboard', function (data) {
+        document.getElementById("main").innerHTML = createHTML(data.leaderboard);
+        document.getElementById("treasure").innerHTML = data.treasure;
+    });
+
+    socket.on('force_refresh', function (data) {
+        refreshPage(username);
+    });
+
+    var refreshPage = function(userName){
+        socket.emit('req_leaderboard', { userName: username });
+    };
+
+    document.getElementById("show").onclick = function(){
+        username = document.getElementById("username").value;
+        refreshPage(username);
+    };
+
+    document.getElementById("pass").onclick = function(){
+        socket.emit('pass_a_day');
+    };
+
+    var createHTML = function(data){
+        var html = '<table style="width:100%">'
+                + '<tr>'
+                    + '<th>Rank</th>'
+                    + '<th>userName</th>'
+                    + '<th>age</th>'
+                    + '<th>Change</th>'
+                    + '<th>Coin</th>'
+                + '</tr>';
+        data.forEach(function(element){
+            if(element.lastRank != 0){
+                if(element.userName == username){
+                    html += '<tr>'
+                    + '<td><b>' + element.rank + '</b></td>'
+                    + '<td><b>' + element.userName + '</b></td>'
+                    + '<td><b>' + element.age + '</b></td>'
+                    + '<td><b>' + (element.lastRank - element.rank).toString() + '</b></td>'
+                    + '<td><b>' + element.coin + '</b></td>'
+                    + '</tr>';
+                } else{
+                    html += '<tr>'
+                        + '<td>' + element.rank + '</td>'
+                        + '<td>' + element.userName + '</td>'
+                        + '<td>' + element.age + '</td>'
+                        + '<td>' + (element.lastRank - element.rank).toString() + '</td>'
+                        + '<td>' + element.coin + '</td>'
+                        + '</tr>';
+                }
+            } else{
+                if(element.userName == username){
+                    html += '<tr>'
+                    + '<td><b>' + element.rank + '</b></td>'
+                    + '<td><b>' + element.userName + '</b></td>'
+                    + '<td><b>' + element.age + '</b></td>'
+                    + '<td><b>' + element.lastRank + '</b></td>'
+                    + '<td><b>' + element.coin + '</b></td>'
+                    + '</tr>';
+                } else{
+                    html += '<tr>'
+                        + '<td>' + element.rank + '</td>'
+                        + '<td>' + element.userName + '</td>'
+                        + '<td>' + element.age + '</td>'
+                        + '<td>' + element.lastRank + '</td>'
+                        + '<td>' + element.coin + '</td>'
+                        + '</tr>';
+                }
+            }
+        });
+        html += '</table>';
+
+        return html;
+    };
+</script>
